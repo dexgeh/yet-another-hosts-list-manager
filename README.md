@@ -14,4 +14,5 @@ Heavily inspired by [prurigro/buildhosts](https://github.com/prurigro/buildhosts
 
 License: Public Domain
 
+Depends only on coreutils and curl.
 
