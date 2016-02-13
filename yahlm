@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+
+set -e
+
+# default adserver lists
+if [ ! -e /etc/hosts.sources ]; then
+  echo generating default /etc/hosts.sources
+  echo 'https://adaway.org/hosts.txt' >> /etc/hosts.sources
+  echo 'http://winhelp2002.mvps.org/hosts.txt' >> /etc/hosts.sources
+  echo 'http://hosts-file.net/ad_servers.txt' >> /etc/hosts.sources
+  echo 'http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext' >> /etc/hosts.sources
+fi
+
+# if not present, backup /etc/hosts
+if [ ! -e /etc/hosts.core ]; then
+  echo backup /etc/hosts in /etc/hosts.core
+  cp /etc/hosts /etc/hosts.core
+fi
+
+# check if present old temp files
+if [ -e /tmp/hosts.adservers ]; then
+  rm /tmp/hosts.adservers
+fi
+
+# download sources
+cat /etc/hosts.sources | while read url; do
+  echo "downloading $url to /tmp/hosts.adservers"
+  curl -s "$url" >> /tmp/hosts.adservers
+done
+
+echo building new /etc/hosts
+
+# remove \r
+tr -d '\r' </tmp/hosts.adservers | sponge /tmp/hosts.adservers
+
+# replace 127.0.0.1 with 0.0.0.0 (faster)
+# delete comment lines
+# delete localhost lines
+# delete trailing comments
+sed -i -e 's/^127\.0\.0\.1/0.0.0.0/g' \
+  -e '/^#/d' \
+  -e '/localhost/d' \
+  -e 's/#.*$//g' \
+  /tmp/hosts.adservers
+
+# sort in-place
+sort /tmp/hosts.adservers -o /tmp/hosts.adservers
+
+# uniq in-place
+sort -u /tmp/hosts.adservers -o /tmp/hosts.adservers
+
+# generate new /etc/hosts
+cat /etc/hosts.core /tmp/hosts.adservers | sponge /etc/hosts
+
+# cleanup
+rm /tmp/hosts.adservers
+
+echo done
+
