@@ -31,7 +31,8 @@ done
 echo building new /etc/hosts
 
 # remove \r
-tr -d '\r' </tmp/hosts.adservers | sponge /tmp/hosts.adservers
+tr -d '\r' < /tmp/hosts.adservers > /tmp/hosts.adservers2
+mv /tmp/hosts.adservers2 /tmp/hosts.adservers
 
 # replace 127.0.0.1 with 0.0.0.0 (faster)
 # delete comment lines
@@ -50,7 +51,7 @@ sort /tmp/hosts.adservers -o /tmp/hosts.adservers
 sort -u /tmp/hosts.adservers -o /tmp/hosts.adservers
 
 # generate new /etc/hosts
-cat /etc/hosts.core /tmp/hosts.adservers | sponge /etc/hosts
+cat /etc/hosts.core /tmp/hosts.adservers > /etc/hosts
 
 # cleanup
 rm /tmp/hosts.adservers
