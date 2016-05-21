@@ -9,6 +9,7 @@ if [ ! -e /etc/hosts.sources ]; then
   echo 'http://winhelp2002.mvps.org/hosts.txt' >> /etc/hosts.sources
   echo 'http://hosts-file.net/ad_servers.txt' >> /etc/hosts.sources
   echo 'http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext' >> /etc/hosts.sources
+  echo 'http://www.malwaredomainlist.com/hostslist/hosts.txt' >> /etc/hosts.sources
 fi
 
 # if not present, backup /etc/hosts
